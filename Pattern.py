@@ -1,6 +1,12 @@
+from turtle import color
 from Color import Color
 
 class Pattern:
+
+    @staticmethod
+    def get_nibbles(n:int) -> '(int)':
+        hex_repr = hex(n)[2:]
+        return int(hex_repr[0], base=16), int(hex_repr[1], base=16)
 
     #Note that this constructor is not meant to be called directly, but instead will be called when loading a pattern from a .ACNH file
     def __init__(self, title:str, author:str, town:str, palette: 'list[Color]', pattern_matrix: 'list[list[Color]]') -> None:
@@ -40,16 +46,18 @@ class Pattern:
             palette = []
             for x in range(15):
                 color_bytes = f.read(3)
-                palette.append(Color.acnh_from_rgb(color_bytes[0], color_bytes[1], color_bytes[2]))
-        
-        print(repr(palette))
-        print(title, island_name, author_name)
+                palette.append(Color.from_rgb(color_bytes[0], color_bytes[1], color_bytes[2]))
+            
+            pattern_matrix = []
+            for x in range(32):
+                pattern_row = []
+                for x in range(16):
+                    pattern_bytes = Pattern.get_nibbles(f.read(1)[0])
+                    pattern_row.append(pattern_bytes[0])
+                    pattern_row.append(pattern_bytes[1])
+                pattern_matrix.append(pattern_row)
 
-        """
-        for x in range(20):
-            byte = f.read(1)
-            print(int.from_bytes(byte, byteorder="little"))
-        """
+        return Pattern(title=title, author=author_name, town=island_name, palette=palette, pattern_matrix=pattern_matrix)
 
 if __name__ == "__main__":
-    Pattern.load_from_file("/home/henry/Documents/ANCHPatternInputer/Test Binaries/Color Palletes/Default_Pallete_No_Title.acnl") 
+    Pattern.load_from_file("/home/henry/Documents/ANCHPatternInputer/Test Binaries/Color Palletes/Default-Titled.acnh") 
