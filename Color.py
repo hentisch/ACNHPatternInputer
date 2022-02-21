@@ -2,11 +2,11 @@ import kdtree
 class Color:
 
     def __init__(self, hue:int, vividness:int, brightness:int) -> None:
-        if hue > 30:
+        if hue > 29:
             raise ValueError("Hue value cannot be larger than 30")
-        if vividness > 15:
+        if vividness > 14:
             raise ValueError("Vividness value cannot be larger than 15")
-        if brightness > 15:
+        if brightness > 14:
             raise ValueError("Brightness value cannot be larger than 15")
 
         self.hue = hue
