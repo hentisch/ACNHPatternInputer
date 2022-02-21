@@ -15,9 +15,13 @@ class Controller():
         for x in range(16):
             self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_UP, nxbt.Buttons.DPAD_LEFT])
 
-    def select_color_pallete(self) -> None:
+    def select_color_tool(self) -> None:
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.X])
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_UP, nxbt.Buttons.DPAD_RIGHT], down=0.1)
+        self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.A])
+    
+    def select_pencil_from_color_tool(self) -> None:
+        self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN, nxbt.Buttons.DPAD_LEFT], down=0.1)
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.A])
 
     def adjust_slider(self, value:int, reset_time:float) -> None:
@@ -35,13 +39,16 @@ class Controller():
         self.adjust_slider(brighness, 2.75)
 
     def adjust_palette(self, palette:'list[Color]') -> None:
-        self.select_color_pallete()
+        self.select_color_tool()
         for x in palette:
             time.sleep(1)
             self.adjust_color(x.hue, x.vividness, x.brightness)
             time.sleep(1)
             self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.R])
             self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN])
+        self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.A])
+
+
 
 def main():
 
@@ -50,7 +57,9 @@ def main():
     input("Press enter to continue with script execution: ")
     control.reset_canvas_pos()
     time.sleep(1)
-    control.adjust_palette()
+    control.adjust_palette(pattern.palette) #After this, press A to exit the menu
+    time.sleep(1)
+    control.select_pencil_from_color_tool()
 
 
 if __name__ == "__main__":
