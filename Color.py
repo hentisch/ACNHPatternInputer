@@ -1,4 +1,3 @@
-import kdtree
 class Color:
 
     def __init__(self, hue:int, vividness:int, brightness:int) -> None:
