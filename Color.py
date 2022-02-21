@@ -58,10 +58,4 @@ class Color:
         max(0, min(14, round((v - Vstart) / Vinc))) + 1)
 
         return Color(values[0], values[1], values[2])
-
-
-
-if __name__ == "__main__":
-    col = Color.acnh_from_rgb(19, 12, 13)
-    print(col.__repr__())
     
