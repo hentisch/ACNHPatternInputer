@@ -53,9 +53,9 @@ class Color:
         
         v = M * 100
 
-        values = (max(0, min(29, round(h * 5))) + 1,
-        max(0, min(14, round(s / Sinc))) + 1,
-        max(0, min(14, round((v - Vstart) / Vinc))) + 1)
+        values = (max(0, min(29, round(h * 5))),
+        max(0, min(14, round(s / Sinc))),
+        max(0, min(14, round((v - Vstart) / Vinc))))
 
         return Color(values[0], values[1], values[2])
     
