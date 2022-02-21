@@ -1,12 +1,6 @@
+import kdtree
 class Color:
 
-    color_conversions = {}
-    with open("Colors.csv", "r") as f:
-        for x in f.readlines():
-            line = x.split(",")
-            color_conversions[line[3]] = (int(line[0]), int(line[1]), int(line[2]))
-            #In each tuple the values go "Hue", "Vividness", and "Brightness"
-    
     def __init__(self, hue:int, vividness:int, brightness:int) -> None:
         if hue > 30:
             raise ValueError("Hue value cannot be larger than 30")
@@ -23,21 +17,51 @@ class Color:
         return f"hue: {self.hue} vividness: {self.vividness} brightness: {self.brightness}"
     
     @staticmethod
-    def color_from_hex(hex:str) -> 'Color':
-        colors = Color.acnh_from_hex(hex)
-        return Color(colors[0], colors[1], colors[2])
+    #This method is pretty much just copied from https://github.com/Thulinma/ACNLPatternTool/blob/bf2fd35a7a1c841b267f968ddfcfa043b4aaaa29/src/libs/ACNHFormat.js
+    #and translated into python
+    def acnh_from_rgb(r:int, g:int, b:int) -> 'tuple[int]':
+        Sinc = 6.68
+        Vstart = 7.843
+        Vinc = 5.58
 
-    @staticmethod
-    def acnh_from_hex(hex:str) -> 'tuple[int]':
-        return Color.color_conversions[hex]
-    
-    @staticmethod
-    def int_to_color_hex(n:int):
-        hex_value = hex(n)[2:]
-        if n <= 16:
-            hex_value = "0" + hex_value
-        return hex_value
+        r /= 255
+        g /= 255
+        b /= 255
+
+        M = max(r, g, b)
+        m = min(r, g, b)
+        C = M - m
+
+        h = 0
+
+        if C == 0:
+            h = 0
+        elif M == r:
+            h = ((g - b) / C) % 6
+        elif M == g:
+            h = (b - r) / C + 2
+        else:
+            h = (r - g) / C + 4
+
+        if h < 0:
+            h += 6
+        
+        if M == 0:
+            s = 0
+        else:
+            s = (C/M) * 100
+        
+        v = M * 100
+
+        values = (max(0, min(29, round(h * 5))) + 1,
+        max(0, min(14, round(s / Sinc))) + 1,
+        max(0, min(14, round((v - Vstart) / Vinc))) + 1)
+
+        return Color(values[0], values[1], values[2])
+
+
 
 if __name__ == "__main__":
-    col = Color.color_from_hex("C82248")
+    col = Color.acnh_from_rgb(19, 12, 13)
+    print(col.__repr__())
     
