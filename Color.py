@@ -19,7 +19,7 @@ class Color:
     @staticmethod
     #This method is pretty much just copied from https://github.com/Thulinma/ACNLPatternTool/blob/bf2fd35a7a1c841b267f968ddfcfa043b4aaaa29/src/libs/ACNHFormat.js
     #and translated into python
-    def acnh_from_rgb(r:int, g:int, b:int) -> 'tuple[int]':
+    def from_rgb(r:int, g:int, b:int) -> 'tuple[int]':
         Sinc = 6.68
         Vstart = 7.843
         Vinc = 5.58
