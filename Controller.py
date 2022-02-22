@@ -1,4 +1,5 @@
 import random as rand
+from textwrap import wrap
 import nxbt
 import time
 import sys
@@ -12,6 +13,8 @@ class Controller():
         self.pro_controller = self.nx.create_controller(nxbt.PRO_CONTROLLER)
         self.nx.wait_for_connection(self.pro_controller)
         self.total_index_changes = 0 #This mod 16 will give the current color index
+        self.xPos = 0
+        self.yPos = 0
     
     def reset_canvas_pos(self) -> None:
         for x in range(16):
@@ -55,17 +58,78 @@ class Controller():
             raise ValueError("Color index cannot be larger than 15")
             
         normal_change = color_index - self.total_index_changes % 16
-        #wrapped_change = min(15 - color_index, color_index)
-        change = normal_change #Change this to select the most efficent method
+        #to find wraped change, go the other way from the normal change
+        if normal_change > 0:
+            wrapped_change = (self.total_index_changes % 16 * -1) + 1 + ((15 - color_index)*-1) -2 
+        else: 
+            wrapped_change =  (15 - self.total_index_changes % 16) + 1 + color_index
+        
+        if abs(normal_change) <= abs(wrapped_change):
+            change = normal_change #Change this to select the most efficent method
+        else:
+            change = wrapped_change
+        
         if change > 0:
             action = nxbt.Buttons.R
         else:
             action = nxbt.Buttons.L
         
         for x in range(abs(change)):
-            self.nx.press_buttons(self.pro_controller, [action]) #Moving to brightness slider
+            self.nx.press_buttons(self.pro_controller, [action], down=0.3) #Moving to brightness slider
+            time.sleep(0.3)
         
         self.total_index_changes += change
+        
+    def fill_pixel(self, color_index:int) -> None:
+        self.change_color(color_index)
+        self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.A])
+    
+    def fill_pattern(self, pattern:'list[list[int]]'):
+        for i, r in enumerate(pattern):
+            if i % 2 == 0: #even
+                for c in r:
+                    self.fill_pixel(c)
+                    self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_RIGHT])
+                    time.sleep(0.2)
+            else:
+                for c in reversed(r):
+                    self.fill_pixel(c)
+                    self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_LEFT])
+                    time.sleep(0.2)
+            self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN])
+    
+    def test_traversal(self):
+        xCount = 0
+        yCount = 0
+        for r in range(32):
+            if r % 2 == 0: #even
+                for c in range(32):
+                    self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_RIGHT])
+                    xCount += 1
+                    time.sleep(0.2)
+                    print(f"X: {xCount}, Y: {yCount}")
+            else:
+                for c in range(32):
+                    self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_LEFT])
+                    time.sleep(0.2)
+                    xCount -= 1
+                    print(f"X: {xCount}, Y: {yCount}")
+            self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN])
+            yCount += 1
+    
+    def test_color_indexing(self):
+        count = 0
+        last_num = 0
+        while True:
+            count += 1
+            num = rand.randint(0, 15)
+            print(f"Adjusting color to index {num} from {last_num} | {count} changes have been done in total")
+            self.change_color(num)
+            last_num = num
+            time.sleep(1)
+            if rand.random() < 0.1:
+                time.sleep(5)
+
 
 
 
@@ -73,22 +137,16 @@ def main():
     control = Controller()
     pattern = Pattern.load_from_file(sys.argv[1])
     input("Press enter to continue with script execution: ")
+    """
     control.reset_canvas_pos()
     time.sleep(1)
-    #control.adjust_palette(pattern.palette) #After this, press A to exit the menu
+    control.adjust_palette(pattern.palette) #After this, press A to exit the menu
     time.sleep(1)
-    #control.select_pencil_from_color_tool()
-    while True:
-        num = rand.randint(0, 15)
-        print("Moving color to " + str(num))
-        control.change_color(num)
-        time.sleep(5)
-    control.change_color(4)
-    control.change_color(7)
-    control.change_color(13)
-    control.change_color(9)
-    control.change_color(14)
-
+    control.select_pencil_from_color_tool()
+    time.sleep(1)
+    control.fill_pattern(pattern.pattern_matrix)
+    """
+    control.test_color_indexing()
 
 if __name__ == "__main__":
     main()
