@@ -19,7 +19,49 @@ class Controller():
     def reset_canvas_pos(self) -> None:
         for x in range(16):
             self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_UP, nxbt.Buttons.DPAD_LEFT])
+    
+    def return_to_orgin(self) -> None:
+        for x in range(max(self.xPos + 10, self.yPos + 10)):
+        #Note that becuase we go an extra 10 presses, we can ensure we really are at 0, 0
+            if x < self.xPos + 10:
+                self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_LEFT])
+            if x < self.yPos + 10:
+                self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_UP])
+        self.xPos = 0 
+        self.yPos = 0
+    
+    def get_point_sign(self, current_point:int, destination_point:int) -> None:
+        if destination_point < current_point:
+            return 1
+        else:
+            return -1
+    
+    def get_point_distance(self, destination_point:int, current_point:int) -> None:
+        return abs(destination_point - current_point) * self.get_point_sign(destination_point, current_point)
 
+    def move_to_location(self, x_point:int, y_point:int) -> None:
+        xTravel = self.get_point_distance(x_point, self.xPos)
+        yTravel = self.get_point_distance(y_point, self.yPos)
+        print(xTravel)
+        print(yTravel)
+        for x in range(max(abs(xTravel), abs(yTravel))):
+            if x < abs(xTravel):
+                if xTravel > 0:
+                    self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_RIGHT])
+                    self.xPos += 1
+                else:
+                    self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_LEFT])
+                    self.xPos -= 1
+            
+            if x < abs(yTravel):
+                if yTravel > 0:
+                    self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN])
+                    self.yPos += 1
+                else:
+                    self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_UP])
+                    self.yPos -= 1
+
+    
     def select_color_tool(self) -> None:
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.X])
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_UP, nxbt.Buttons.DPAD_RIGHT], down=0.1)
@@ -28,6 +70,9 @@ class Controller():
     def select_pencil_from_color_tool(self) -> None:
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN, nxbt.Buttons.DPAD_LEFT], down=0.1)
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.A])
+    
+    def select_eye_dropper(self) -> None:
+        self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.R, nxbt.Buttons.L])
 
     def adjust_slider(self, value:int, reset_time:float) -> None:
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_LEFT], down=reset_time) #This resets the slider value to 0
@@ -91,12 +136,17 @@ class Controller():
                     self.fill_pixel(c)
                     self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_RIGHT])
                     time.sleep(0.2)
+                    self.xPos += 1
+                    print(f"X: {self.xPos}, Y: {self.yPos}")
             else:
                 for c in reversed(r):
                     self.fill_pixel(c)
                     self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_LEFT])
                     time.sleep(0.2)
+                    self.xPos -= 1
+                    print(f"X: {self.xPos}, Y: {self.yPos}")
             self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN])
+            self.yPos += 1
     
     def test_traversal(self):
         xCount = 0
@@ -130,14 +180,10 @@ class Controller():
             if rand.random() < 0.1:
                 time.sleep(5)
 
-
-
-
 def main():
     control = Controller()
     pattern = Pattern.load_from_file(sys.argv[1])
     input("Press enter to continue with script execution: ")
-    """
     control.reset_canvas_pos()
     time.sleep(1)
     control.adjust_palette(pattern.palette) #After this, press A to exit the menu
@@ -145,8 +191,6 @@ def main():
     control.select_pencil_from_color_tool()
     time.sleep(1)
     control.fill_pattern(pattern.pattern_matrix)
-    """
-    control.test_color_indexing()
 
 if __name__ == "__main__":
     main()
