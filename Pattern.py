@@ -6,7 +6,10 @@ class Pattern:
     @staticmethod
     def get_nibbles(n:int) -> '(int)':
         hex_repr = hex(n)[2:]
-        return int(hex_repr[0], base=16), int(hex_repr[1], base=16)
+        if len(hex_repr) >= 2:
+            return int(hex_repr[0], base=16), int(hex_repr[1], base=16)
+        else:
+            return 0, int(hex_repr[0], base=16)
 
     #Note that this constructor is not meant to be called directly, but instead will be called when loading a pattern from a .ACNH file
     def __init__(self, title:str, author:str, town:str, palette: 'list[Color]', pattern_matrix: 'list[list[Color]]') -> None:
@@ -53,11 +56,12 @@ class Pattern:
                 pattern_row = []
                 for x in range(16):
                     pattern_bytes = Pattern.get_nibbles(f.read(1)[0])
-                    pattern_row.append(pattern_bytes[0])
                     pattern_row.append(pattern_bytes[1])
+                    pattern_row.append(pattern_bytes[0])
                 pattern_matrix.append(pattern_row)
 
         return Pattern(title=title, author=author_name, town=island_name, palette=palette, pattern_matrix=pattern_matrix)
 
 if __name__ == "__main__":
-    Pattern.load_from_file("/home/henry/Documents/ANCHPatternInputer/Test Binaries/Color Palletes/Default-Titled.acnh") 
+    p = Pattern.load_from_file("/home/henry/Documents/ANCHPatternInputer/TestBinaries/PixelMatrix/Empty (2).acnh") 
+    print(p.pattern_matrix)
