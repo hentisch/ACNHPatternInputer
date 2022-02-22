@@ -148,25 +148,6 @@ class Controller():
             self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN])
             self.yPos += 1
     
-    def test_traversal(self):
-        xCount = 0
-        yCount = 0
-        for r in range(32):
-            if r % 2 == 0: #even
-                for c in range(32):
-                    self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_RIGHT])
-                    xCount += 1
-                    time.sleep(0.2)
-                    print(f"X: {xCount}, Y: {yCount}")
-            else:
-                for c in range(32):
-                    self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_LEFT])
-                    time.sleep(0.2)
-                    xCount -= 1
-                    print(f"X: {xCount}, Y: {yCount}")
-            self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN])
-            yCount += 1
-    
     def test_color_indexing(self):
         count = 0
         last_num = 0
