@@ -7,16 +7,16 @@ from Pattern import Pattern
 from Color import Color
 
 class Controller():
-    def __init__(self, pattern:Pattern) -> None:
-        self.nx = nxbt.Nxbt()
-        self.pro_controller = self.nx.create_controller(nxbt.PRO_CONTROLLER)
-
+    def __init__(self, pattern:Pattern, debug=False) -> None:
+        if not debug:
+            self.nx = nxbt.Nxbt()
+            self.pro_controller = self.nx.create_controller(nxbt.PRO_CONTROLLER)
+            self.nx.wait_for_connection(self.pro_controller)
+        
         self.total_index_changes = 0 #This mod 16 will give the current color index
         self.xPos = 0
         self.yPos = 0
         self.pattern = pattern
-
-        self.nx.wait_for_connection(self.pro_controller)
     
     def reset_canvas_pos(self) -> None:
         for x in range(16):
@@ -31,6 +31,9 @@ class Controller():
                 self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_UP])
         self.xPos = 0 
         self.yPos = 0
+    
+    def get_current_pos(self) -> 'tuple[int]':
+        return self.xPos, self.yPos
     
     def get_point_sign(self, current_point:int, destination_point:int) -> int:
         if destination_point < current_point:
@@ -62,6 +65,34 @@ class Controller():
                     self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_UP])
                     self.yPos -= 1
     
+    def certify_current_point(self) -> None:
+        xHome = self.xPos
+        yHome = self.yPos
+
+        self.return_to_orgin()
+        self.select_eye_dropper()
+        self.total_index_changes = self.pattern.pattern_matrix[0][0]
+
+        self.move_to_location(xHome, yHome)
+    
+    def get_nearest_validated(self) -> 'tuple[int]':
+        col_point = 0
+        if self.yPos % 4 == 0:
+            col_point = self.xPos // 4
+        else:
+            col_point = min(round(self.xPos / 4), 7)
+        return col_point*4, self.yPos // 4 * 4
+
+    def correct_curent_point(self) -> None:
+        point = self.get_nearest_validated()
+        xHome = self.xPos
+        yHome = self.yPos
+
+        self.move_to_location(point[0], point[1])
+        self.select_eye_dropper()
+        self.total_index_changes = self.pattern.pattern_matrix[point[1]][point[0]]
+        self.move_to_location(xHome, yHome)
+
     def select_color_tool(self) -> None:
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.X])
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_UP, nxbt.Buttons.DPAD_RIGHT], down=0.1)
@@ -172,16 +203,23 @@ def main():
     pattern = Pattern.load_from_file(sys.argv[1])
     control = Controller(pattern)
     input("Press enter to continue with script execution: ")
-    #control.reset_canvas_pos()
+    control.reset_canvas_pos()
     time.sleep(1)
-
-    #control.adjust_palette() #After this, press A to exit the menu
+    control.adjust_palette() #After this, press A to exit the menu
     time.sleep(1)
-    #control.select_pencil_from_color_tool()
+    control.select_pencil_from_color_tool()
     time.sleep(1)
-
     control.fill_pattern()
+    control.move_to_location(12, 18)
+    control.certify_current_point()
     print("Done!")
 
+def test_main():
+    pattern = Pattern.load_from_file(sys.argv[1])
+    control = Controller(pattern, debug=True)
+    control.xPos = 3
+    control.yPos = 5
+    print(control.get_nearest_validated())
+
 if __name__ == "__main__":
-    main()
+    test_main()
