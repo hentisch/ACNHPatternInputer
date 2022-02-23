@@ -7,13 +7,14 @@ from Pattern import Pattern
 from Color import Color
 
 class Controller():
-    def __init__(self) -> None:
+    def __init__(self, pattern:Pattern) -> None:
         self.nx = nxbt.Nxbt()
         self.pro_controller = self.nx.create_controller(nxbt.PRO_CONTROLLER)
 
         self.total_index_changes = 0 #This mod 16 will give the current color index
         self.xPos = 0
         self.yPos = 0
+        self.pattern = pattern
 
         self.nx.wait_for_connection(self.pro_controller)
     
@@ -87,9 +88,9 @@ class Controller():
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN]) #Moving to brightness slider
         self.adjust_slider(brighness, 2.75)
 
-    def adjust_palette(self, palette:'list[Color]') -> None:
+    def adjust_palette(self) -> None:
         self.select_color_tool()
-        for x in palette:
+        for x in self.pattern.palette:
             time.sleep(1)
             self.adjust_color(x.hue, x.vividness, x.brightness)
             time.sleep(1)
@@ -129,9 +130,9 @@ class Controller():
         self.change_color(color_index)
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.A])
     
-    def fill_pattern(self, pattern:'list[list[int]]') -> None:
+    def fill_pattern(self) -> None:
 
-        for i, r in enumerate(pattern):
+        for i, r in enumerate(self.pattern.pattern_matrix):
             x_increment:int
             action:nxbt.Buttons
             reverse_function:function
@@ -168,18 +169,18 @@ class Controller():
             time.sleep(1)
 
 def main():
-    control = Controller()
     pattern = Pattern.load_from_file(sys.argv[1])
+    control = Controller(pattern)
     input("Press enter to continue with script execution: ")
-    control.reset_canvas_pos()
+    #control.reset_canvas_pos()
     time.sleep(1)
 
-    control.adjust_palette(pattern.palette) #After this, press A to exit the menu
+    #control.adjust_palette() #After this, press A to exit the menu
     time.sleep(1)
-    control.select_pencil_from_color_tool()
+    #control.select_pencil_from_color_tool()
     time.sleep(1)
 
-    control.fill_pattern(pattern.pattern_matrix)
+    control.fill_pattern()
     print("Done!")
 
 if __name__ == "__main__":
