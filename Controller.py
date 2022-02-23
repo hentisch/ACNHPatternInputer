@@ -163,12 +163,12 @@ class Controller():
     
     def fill_pattern(self) -> None:
 
-        for i, r in enumerate(self.pattern.pattern_matrix):
+        for ri, r in enumerate(self.pattern.pattern_matrix):
             x_increment:int
             action:nxbt.Buttons
             reverse_function:function
 
-            if i % 2 == 0:
+            if ri % 2 == 0:
                 x_increment = 1
                 action = nxbt.Buttons.DPAD_RIGHT
                 reverse_function = lambda x: x
@@ -177,7 +177,11 @@ class Controller():
                 action = nxbt.Buttons.DPAD_LEFT
                 reverse_function = reversed
             
-            for c in reverse_function(r):
+            for ci, c in enumerate(reverse_function(r)):
+                if ri % 4 == 0 and ci % 4 == 0:
+                    self.certify_current_point()
+                else:
+                    self.correct_curent_point()
                 self.fill_pixel(c)
                 self.nx.press_buttons(self.pro_controller, [action])
                 time.sleep(0.2)
@@ -210,16 +214,20 @@ def main():
     control.select_pencil_from_color_tool()
     time.sleep(1)
     control.fill_pattern()
-    control.move_to_location(12, 18)
-    control.certify_current_point()
     print("Done!")
 
 def test_main():
     pattern = Pattern.load_from_file(sys.argv[1])
-    control = Controller(pattern, debug=True)
-    control.xPos = 3
-    control.yPos = 5
-    print(control.get_nearest_validated())
+    control = Controller(pattern)
+    input("Press enter to continue with script execution: ")
+    control.reset_canvas_pos()
+    time.sleep(1)
+    control.adjust_palette() #After this, press A to exit the menu
+    time.sleep(1)
+    control.select_pencil_from_color_tool()
+    time.sleep(1)
+    control.fill_pattern()
+    print("Done!")
 
 if __name__ == "__main__":
     test_main()
