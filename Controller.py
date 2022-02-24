@@ -93,13 +93,27 @@ class Controller():
         self.total_index_changes = self.pattern.pattern_matrix[point[1]][point[0]]
         self.move_to_location(xHome, yHome)
 
-    def select_color_tool(self) -> None:
+    def select_color_tool_from_pencil(self) -> None:
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.X])
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_UP, nxbt.Buttons.DPAD_RIGHT], down=0.1)
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.A])
     
     def select_pencil_from_color_tool(self) -> None:
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN, nxbt.Buttons.DPAD_LEFT], down=0.1)
+        self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.A])
+    
+    def use_fill_tool(self) -> None:
+        self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.X])
+        for x in range(4):
+            self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN])
+        self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.A])
+        self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.A])
+
+    def select_color_tool_from_fill(self) -> None:
+        self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.X])
+        for x in range(5):
+            self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_UP])
+        self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_RIGHT])
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.A])
     
     def select_eye_dropper(self) -> None:
@@ -119,8 +133,13 @@ class Controller():
         self.nx.press_buttons(self.pro_controller, [nxbt.Buttons.DPAD_DOWN]) #Moving to brightness slider
         self.adjust_slider(brighness, 2.75)
 
-    def adjust_palette(self) -> None:
-        self.select_color_tool()
+    def adjust_palette(self, current_tool="pencil") -> None:
+        if current_tool == "pencil":
+            self.select_color_tool_from_pencil()
+        elif current_tool == "fill_tool":
+            self.select_color_tool_from_fill()
+        else:
+            raise ValueError("Current tool needs to be either \"fill tool\" or \"pencil\" ")
         for x in self.pattern.palette:
             time.sleep(1)
             self.adjust_color(x.hue, x.vividness, x.brightness)
@@ -178,11 +197,13 @@ class Controller():
                 reverse_function = reversed
             
             for ci, c in enumerate(reverse_function(r)):
-                if ri % 4 == 0 and ci % 4 == 0:
+                if ri % 4 == 0 and ci % 4 == 0 and not (ci == 0 and ri == 0):
                     self.certify_current_point()
-                else:
+                elif not (ci == 0 and ri == 0):
                     self.correct_curent_point()
                 self.fill_pixel(c)
+
+                
                 self.nx.press_buttons(self.pro_controller, [action])
                 time.sleep(0.2)
                 self.xPos += x_increment
@@ -209,7 +230,9 @@ def main():
     input("Press enter to continue with script execution: ")
     control.reset_canvas_pos()
     time.sleep(1)
-    control.adjust_palette() #After this, press A to exit the menu
+    control.use_fill_tool()
+    time.sleep(1)
+    control.adjust_palette(current_tool="fill_tool") #After this, press A to exit the menu
     time.sleep(1)
     control.select_pencil_from_color_tool()
     time.sleep(1)
@@ -222,7 +245,9 @@ def test_main():
     input("Press enter to continue with script execution: ")
     control.reset_canvas_pos()
     time.sleep(1)
-    control.adjust_palette() #After this, press A to exit the menu
+    control.use_fill_tool()
+    time.sleep(1)
+    control.adjust_palette(current_tool="fill_tool") #After this, press A to exit the menu
     time.sleep(1)
     control.select_pencil_from_color_tool()
     time.sleep(1)
