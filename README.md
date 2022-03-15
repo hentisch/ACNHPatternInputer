@@ -15,7 +15,7 @@ On your Nintendo Switch, navigate to the "Change Grip/Order" menu. Once you are 
   
 NOTE: Due to certain quirks with controller emulation, you need to pair your emulated controller before any other controllers. You may use additional, real controllers along with this programs emulated controller, however connect those after paring your emulated controller.
   
-Once your program runs it should connect to your Switch, and then wait for further input to start drawing the pattern. Use your touch controlls or another controller you coneccted to navigate to the design pattern you would like to draw your new pattern in. Once you have selected this pattern, press enter and wait for the pattern to be drawn. The program should print "Done!", at which point you can quit the program.
+Once your program runs it should connect to your Switch, and then wait for further input to start drawing the pattern. Use your touch controlls or another controller you connected to navigate to the design pattern you would like to draw your new pattern in. Once you have selected this pattern, press enter and wait for the pattern to be drawn. The program should print "Done!", at which point you can quit the program.
 
 ### Issues and Contributions:
 If you experience any issues with getting this project running on your computer and Switch, feel free to create a Github issue. Additionally, if you have a feature request for this project you can either ask for it via a Github issue, or prefferably code a solution to yourself and submit a Pull Request. 
