@@ -1,5 +1,5 @@
 # ACNHPatternInputer
-A project which will automatically input a pattern from acpatterns.com, allowing for utilization of native ACNH features as well as the publishing of created patterns.
+A program which will automatically input a pattern from acpatterns.com, allowing for utilization of native ACNH features as well as the publishing of created patterns.
 
 ### Installation:
 First, install [NXBT](https://github.com/Brikwerk/nxbt), following the instructions on their Github page. Due to the low-level nature of what the libary does - making your computer pretend to be a Switch Pro Controller over Bluetooth - this library will only run on Linux computers, which allow for low-level configuration of Bluetooth devices. 
