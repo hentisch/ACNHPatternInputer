@@ -218,7 +218,7 @@ def main():
     control.fill_pattern()
     print("Done!")
 
-def test_main():
+def test_main(): #This method exists for testing only and should not be used in normal program flow
     pattern = Pattern.load_from_file(sys.argv[1])
     control = Controller(pattern)
     input("Press enter to continue with script execution: ")
@@ -234,4 +234,4 @@ def test_main():
     print("Done!")
 
 if __name__ == "__main__":
-    test_main()
+    main()
