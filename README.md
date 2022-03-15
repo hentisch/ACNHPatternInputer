@@ -2,12 +2,12 @@
 A project which will automatically input a pattern from acpatterns.com, allowing for utilization of native ACNH features as well as the publishing of created patterns.
 
 ### Installation:
-First, install [NXBT](https://github.com/Brikwerk/nxbt), following the instructions on their Github page. Due to the low-level nature of what the libary does - making your computer pretend to be a Switch Pro Controller over Bluetooth - this library will only run on Linux computers which allow for low-level configuration of Bluetooth devices. 
+First, install [NXBT](https://github.com/Brikwerk/nxbt), following the instructions on their Github page. Due to the low-level nature of what the libary does - making your computer pretend to be a Switch Pro Controller over Bluetooth - this library will only run on Linux computers, which allow for low-level configuration of Bluetooth devices. 
 
 After installing NXBT, clone this repo into a folder of your choice.
 
 ### Usage:
-First, go to [acpatterns.com](acpatterns.com), and create a pattern you would like to have on your Island. Make sure to save it as the .ACNH (Animal Crossing New Horizons File), not as an .ACNL (Animal Crossing New Leaf) file. You can place this anywhere on your computer, just make sure to save the file path.
+First, go to [acpatterns.com](acpatterns.com), and create a pattern you would like to have on your Island. Make sure to save it with the .ACNH (Animal Crossing New Horizons) file format, and not as an .ACNL (Animal Crossing New Leaf) file. You can place this pattern file anywhere on your computer, just make sure to save the file path.
 
 Now, turn on your Switch and open Animal Crossing New Horizons. Open up a pattern, and make sure that your pen tool is at the default starting location (don't mess with anything after opening the pattern). This pattern does not have to be blank.
 
